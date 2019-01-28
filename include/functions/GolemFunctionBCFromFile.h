@@ -34,12 +34,11 @@ class GolemFunctionBCFromFile : public Function
 {
 public:
   GolemFunctionBCFromFile(const InputParameters & parameters);
-  virtual ~GolemFunctionBCFromFile();
   virtual Real value(Real t, const Point & pt) override;
 
 protected:
-  GolemSetBCFromFile * _set_bc;
-  GolemInterpolateBCFromFile * _interpolate_bc;
+  std::unique_ptr<GolemSetBCFromFile> _set_bc;
+  std::unique_ptr<GolemInterpolateBCFromFile> _interpolate_bc;
   int _n_points;
   bool _has_interpol_in_time;
   bool _has_interpol_in_space;

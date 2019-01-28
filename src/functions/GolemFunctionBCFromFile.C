@@ -37,8 +37,8 @@ validParams<GolemFunctionBCFromFile>()
 
 GolemFunctionBCFromFile::GolemFunctionBCFromFile(const InputParameters & parameters)
   : Function(parameters),
-    _set_bc(NULL),
-    _interpolate_bc(NULL),
+    _set_bc(nullptr),
+    _interpolate_bc(nullptr),
     _has_interpol_in_time(getParam<bool>("interpolate_data_in_time")),
     _has_interpol_in_space(getParam<bool>("interpolate_data_in_space")),
     _data_file_name(isParamValid("data_file") ? getParam<std::string>("data_file") : "")
@@ -52,18 +52,11 @@ GolemFunctionBCFromFile::GolemFunctionBCFromFile(const InputParameters & paramet
   ColumnMajorMatrix pz(_time_frames.size(), 1);
   fillMatrixBC(px, py, pz);
   if (!_has_interpol_in_space)
-    _set_bc = new GolemSetBCFromFile(_n_points, _time_frames, _file_names, px, py, pz);
+    _set_bc =
+        libmesh_make_unique<GolemSetBCFromFile>(_n_points, _time_frames, _file_names, px, py, pz);
   else
-    _interpolate_bc =
-        new GolemInterpolateBCFromFile(_n_points, _time_frames, _file_names, px, py, pz);
-}
-
-GolemFunctionBCFromFile::~GolemFunctionBCFromFile()
-{
-  if (!_has_interpol_in_space)
-    delete _set_bc;
-  else
-    delete _interpolate_bc;
+    _interpolate_bc = libmesh_make_unique<GolemInterpolateBCFromFile>(
+        _n_points, _time_frames, _file_names, px, py, pz);
 }
 
 Real
